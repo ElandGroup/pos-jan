@@ -21,7 +21,7 @@ var myHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	claims := user.(*jwt.Token).Claims.(jwt.MapClaims)
-	fmt.Println(claims["foo"])
+	fmt.Println(claims["empId"])
 
 })
 
@@ -30,7 +30,7 @@ func main() {
 
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return []byte("AllYourBase"), nil
+			return []byte(jwtPwd), nil
 		},
 		// When set, the middleware verifies that tokens are signed with the specific signing algorithm
 		// If the signing method is not constant the ValidationKeyGetter callback can be used to implement additional checks
@@ -48,8 +48,12 @@ func main() {
 	http.ListenAndServe(":3001", nil)
 }
 
+const (
+	jwtPwd = "Account_8CFB2EC534E14D56"
+)
+
 func login(w http.ResponseWriter, r *http.Request) {
-	mySigningKey := []byte("AllYourBase")
+	mySigningKey := []byte(jwtPwd)
 
 	// Create the Claims
 	claims := &jwt.StandardClaims{
@@ -64,10 +68,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginCustomer(w http.ResponseWriter, r *http.Request) {
-	mySigningKey := []byte("AllYourBase")
+	mySigningKey := []byte(jwtPwd)
 
 	type MyCustomClaims struct {
-		Foo string `json:"foo"`
+		EmpId string `json:"empId"`
 		jwt.StandardClaims
 	}
 
@@ -76,7 +80,8 @@ func loginCustomer(w http.ResponseWriter, r *http.Request) {
 		"1234",
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
-			Issuer:    "test",
+			Issuer:    "account",
+			Audience:  "Account",
 		},
 	}
 
