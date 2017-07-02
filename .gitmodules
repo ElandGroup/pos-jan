@@ -1,0 +1,3 @@
+[submodule "kit"]
+	path = kit
+	url = http://git.elandsystems.com.cn:3000/p2labs/kit.git
